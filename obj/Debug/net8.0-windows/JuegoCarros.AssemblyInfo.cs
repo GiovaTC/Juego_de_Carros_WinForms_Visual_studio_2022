@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("JuegoCarros")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b53538439b0c3db44dd072dcfad323698c6118e7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87a0047911f8338262488a7658dace09c3529109")]
 [assembly: System.Reflection.AssemblyProductAttribute("JuegoCarros")]
 [assembly: System.Reflection.AssemblyTitleAttribute("JuegoCarros")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
