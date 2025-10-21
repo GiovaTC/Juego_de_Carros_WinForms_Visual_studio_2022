@@ -1,3 +1,4 @@
+using Oracle.ManagedDataAccess.Client;
 using System.Drawing.Text;
 
 namespace JuegoCarros
@@ -53,7 +54,7 @@ namespace JuegoCarros
             playerCar.Location = new Point((this.ClientSize.Width - playerCar.Width) / 2, this.ClientSize.Height - playerCar.Height - 30);
             this.Controls.Add(playerCar);
 
-            gameTimer = new Timer();
+            gameTimer = new System.Windows.Forms.Timer();
             gameTimer.Interval = 20; // ~50 FPS
             gameTimer.Tick += GameTimer_Tick;
 
@@ -140,19 +141,62 @@ namespace JuegoCarros
                     obstacleSpeed = 6 + (score / 100);
                 }
             }
+        }
+        private void CreateObstacle()
+        {
+            var width = rnd.Next(30, 80);
+            var obs = new PictureBox();
+            obs.Size = new Size(width, rnd.Next(20, 50));
+            obs.BackColor = Color.Red;
+            int x = rnd.Next(0, this.ClientSize.Width - obs.Width);
+            obs.Location = new Point(x, -obs.Height);
+            obstacles.Add(obs);
+            this.Controls.Add(obs);
+            obs.BringToFront();
+            playerCar.BringToFront();
+        }
 
-            Private void CreateObstacle()
+        private void GameOver()
+        {
+            gameTimer.Stop();
+            btnSave.Enabled = true;
+            btnStart.Enabled = true;
+            MessageBox.Show($"Juego terminado. Puntaje: {score}", "Game Over", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            SaveScoreToOracle(txtPlayer.Text, score);
+        }
+
+        private void SaveScoreToOracle(string player, int scoreValue)
+        {
+            try
             {
-                var width = rnd.Next(30, 80);
-                var obs = new PictureBox();
-                obs.Size = new Size(width, rnd.Next(20, 50));
-                obs.BackColor = Color.Red;
-                int x = rnd.Next(0, this.ClientSize.Width - obs.Width);
-                obs.Location = new Point(x, -obs.Height);
-                obstacles.Add(obs);
-                this.Controls.Add(obs);
-                obs.BringToFront();
-                playerCar.BringToFront();
+                using (var con = new OracleConnection(oracleConnectionString))
+                {
+                    con.Open();
+                    using (var cmd = con.CreateCommand())
+                    {
+                        cmd.CommandText = "INSERT INTO SCORES (PLAYER, SCORE, PLAYED_AT) VALUES (:p, :s, SYSTIMESTAMP)";
+                        cmd.Parameters.Add(new OracleParameter("p", OracleDbType.Varchar2) { Value = player });
+                        cmd.Parameters.Add(new OracleParameter("s", OracleDbType.Int32) { Value = scoreValue });
+                        int rows = cmd.ExecuteNonQuery();
+                        if (rows > 0)
+                        {
+                            MessageBox.Show("Puntaje guardado en Oracle 19c.", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            btnSave.Enabled = false;
+                        }
+                        else
+                        {
+                            MessageBox.Show("No se pudo guardar el puntaje.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al guardar en Oracle: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
