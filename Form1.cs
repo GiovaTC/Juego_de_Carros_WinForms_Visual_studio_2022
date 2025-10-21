@@ -178,7 +178,7 @@ namespace JuegoCarros
                     con.Open();
                     using (var cmd = con.CreateCommand())
                     {
-                        cmd.CommandText = "INSERT INTO SCORES (PLAYER, SCORE, PLAYED_AT) VALUES (:p, :s, SYSTIMESTAMP)";
+                        cmd.CommandText = "INSERT INTO SCORES_CARROS (PLAYER, SCORE, PLAYED_AT) VALUES (:p, :s, SYSTIMESTAMP)";
                         cmd.Parameters.Add(new OracleParameter("p", OracleDbType.Varchar2) { Value = player });
                         cmd.Parameters.Add(new OracleParameter("s", OracleDbType.Int32) { Value = scoreValue });
                         int rows = cmd.ExecuteNonQuery();
